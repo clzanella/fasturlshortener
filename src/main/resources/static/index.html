@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Short URL</title>
+</head>
+<body>
+
+    <input id="url" type="url" placeholder="URL to shorten"><button id="shortBtn">Short URL</button><br><br>
+    <a id="shortUrl" target="_blank"></a>
+
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#shortBtn').click(function() {
+
+           var urlToShorten = $("#url").val();
+
+           var shortUrl = $("#shortUrl");
+
+           if(urlToShorten){
+
+             $.ajax({
+                type: "POST",
+                url: "/shortener",
+                contentType: "application/json",
+                data: JSON.stringify({ url: urlToShorten})
+                })
+                .done(function(data, textStatus, xhr) {
+
+                   shortUrl.text(data.newUrl);
+                   shortUrl.attr("href", data.newUrl);
+
+                })
+                .fail(function(xhr, textStatus) {
+                    console.log(textStatus);
+
+                   shortUrl.text("");
+                   shortUrl.attr("href", "");
+
+                 });
+
+           } else {
+
+               shortUrl.text("");
+               shortUrl.attr("href", "");
+           }
+
+        });
+    });
+</script>
+</html>

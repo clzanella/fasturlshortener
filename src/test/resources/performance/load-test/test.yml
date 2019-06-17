@@ -1,0 +1,31 @@
+---
+scenarios:
+  shorten-demo:
+    data-sources:
+    - config.csv
+    - links.csv
+    requests:
+    - url: ${host}/shortener
+      method: POST
+      headers:
+        content-type: application/json
+      body:
+        url: ${link}
+      assert-jsonpath:
+        - "$.newUrl"
+        - "$.expiresAt"
+      extract-jsonpath:
+        shortUrl:
+          jsonpath: $.newUrl
+    - url: ${shortUrl}
+      assert:
+        - contains:
+            - 302
+          subject: http-code
+          not: true
+
+execution:
+- concurrency: 40
+  ramp-up: 20s
+  hold-for: 1m
+  scenario: shorten-demo
